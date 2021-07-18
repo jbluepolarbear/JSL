@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace JSL.Utility
 {
@@ -21,9 +22,19 @@ export function powerOf2(power: number): number {
   return po2;
 }
          */
+        private static List<int> _powerOf2Cache = new List<int>
+        {
+            1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096
+        };
         public static int PowerOf2(int power)
         {
-            return (int) Math.Pow(2, power);
+            if (_powerOf2Cache.Count <= power)
+            {
+                var value = PowerOf2(power - 1) * 2;
+                _powerOf2Cache.Add(value);
+            }
+
+            return _powerOf2Cache[power];
         }
     }
 }

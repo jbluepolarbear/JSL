@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Numerics;
 
 namespace JSL.Buffers
@@ -65,15 +66,12 @@ namespace JSL.Buffers
                 return *(double*) ptr;
             }
         }
-        
+
+        private static double Log2 = Math.Log(2); 
         public static int BitsRequired(int min, int max)
         {
-            return 32 - LeadingZeroCount((uint) (max - min));
-        }
-        
-        public static int LeadingZeroCount(uint value)
-        {
-            return BitOperations.LeadingZeroCount(value);
+            var log2 = Math.Log(max - min) / Log2;
+            return min == max ? 0 : (int) Math.Floor(log2 + 1);
         }
         
         public static ushort NetworkToHost(ushort value)
