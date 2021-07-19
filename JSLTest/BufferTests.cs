@@ -46,12 +46,6 @@ namespace JSLTest
             using var writer = MemoryManager.Instance.RecyclablePool.Get<WriteStream>();
             writer.WriteBits(127, 7);
             writer.WriteBits('c', 16);
-            var bytes = new byte[128];
-            for (var i = 0; i < 128; ++i)
-            {
-                bytes[i] = (byte) i;
-            }
-            writer.WriteBytes(bytes, 128);
             writer.WriteIntRange(2048, 1024, 2048);
             writer.Write(123465643L);
             writer.Write(9223372036854775807UL);
@@ -81,6 +75,12 @@ namespace JSLTest
             netTransform2.Rotation.W = 1.0f;
             netList.Add(netTransform2);
             writer.Write(netList);
+            var bytes = new byte[128];
+            for (var i = 0; i < 128; ++i)
+            {
+                bytes[i] = (byte) i;
+            }
+            writer.WriteBytes(bytes, 128);
 
 
             var copyBuffer = new byte[1024];
@@ -90,11 +90,6 @@ namespace JSLTest
             reader.Fill(copyBuffer, 0, size);
             Assert.AreEqual(127, reader.ReadBits(7));
             Assert.AreEqual('c', reader.ReadBits(16));
-            reader.ReadBytes(bytes, 128);
-            for (var i = 0; i < 128; ++i)
-            {
-                Assert.AreEqual((byte) i, bytes[i]);
-            }
             Assert.AreEqual(2048, reader.ReadIntRange(1024, 2048));
             Assert.AreEqual(123465643L, reader.ReadInt64());
             Assert.AreEqual(9223372036854775807UL, reader.ReadUInt64());
@@ -102,6 +97,11 @@ namespace JSLTest
             Assert.AreEqual(1.123456789101112131415, reader.ReadDouble());
             using var outNetList = MemoryManager.Instance.RecyclablePool.Get<NetList<NetTransform>>();
             reader.Read(outNetList);
+            reader.ReadBytes(bytes, 128);
+            for (var i = 0; i < 128; ++i)
+            {
+                Assert.AreEqual((byte) i, bytes[i]);
+            }
         }
     }
 }
