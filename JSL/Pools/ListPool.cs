@@ -10,6 +10,11 @@ namespace JSL.Pools
         private int _reserveSize = 1024;
         private Dictionary<Type, List<IList>> _availableLists = new Dictionary<Type, List<IList>>();
 
+        public void Clear()
+        {
+            _availableLists.Clear();
+        }
+        
         public List<T> Get<T>()
         {
             if (!_availableLists.TryGetValue(typeof(T), out var listPool))

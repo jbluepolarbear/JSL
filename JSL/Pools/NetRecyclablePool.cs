@@ -8,6 +8,11 @@ namespace JSL.Pools
     {
         private Dictionary<Type, NetBasePool<NetRecyclable>> _recyclePools = new Dictionary<Type, NetBasePool<NetRecyclable>>();
 
+        public void Clear()
+        {
+            _recyclePools.Clear();
+        }
+
         public T Get<T>() where T: NetRecyclable, new()
         {
             var type = typeof(T);

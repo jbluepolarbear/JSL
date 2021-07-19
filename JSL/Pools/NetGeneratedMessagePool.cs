@@ -15,6 +15,12 @@ namespace JSL.Pools
         
         private Dictionary<uint, NetBasePool<BaseMessage>> _messagePools = new Dictionary<uint, NetBasePool<BaseMessage>>();
 
+        public void Clear()
+        {
+            _messageFactory = null;
+            _messagePools.Clear();
+        }
+
         public BaseMessage Get(uint typeId)
         {
             if (!TryGet(typeId, out var messagePool))

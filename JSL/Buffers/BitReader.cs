@@ -124,12 +124,12 @@ namespace JSL.Buffers
 
             Assert.True(GetAlignBits() == 0);
 
-            int numWords = (bytes - headBytes) / 4;
+            var numWords = (bytes - headBytes) / 4;
             if (numWords > 0)
             {
                 Assert.True(_bitIndex == 0);
                 // memcpy(data + headBytes, &_data[_wordIndex], numWords * 4);
-                Memory.Copy(_data, data, _wordIndex, headBytes, _numWords * 4);
+                Memory.Copy(_data, data, _wordIndex, headBytes, numWords / 4);
                 _bitsRead += numWords * 32;
                 _wordIndex += numWords;
                 _scratch = Memory.NetworkToHost(_data[_wordIndex]);
