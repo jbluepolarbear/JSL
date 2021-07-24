@@ -12,7 +12,7 @@ namespace JSL.NetTypes
         private const float Minimum = -1.0f / 1.414214f; // 1.0 / sqrt(2)
         private const float Maximum = +1.0f / 1.414214f;
 
-        private const int Bits = 9;
+        private const int Bits = 12;
         private const float Scale = (float) ((1u << Bits) - 1u); // 2 ^ 9 - 1
         private const float InverseScale = 1.0f / Scale;
 
