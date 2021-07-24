@@ -5,7 +5,6 @@ using NUnit.Framework;
 
 namespace JSLTest
 {
-    [NonParallelizable]
     [TestFixture]
     public class BufferTests
     {
@@ -97,6 +96,21 @@ namespace JSLTest
             Assert.AreEqual(1.123456789101112131415, reader.ReadDouble());
             using var outNetList = MemoryManager.Instance.RecyclablePool.Get<NetList<NetTransform>>();
             reader.Read(outNetList);
+            const float tolerance = 0.02f;
+            for (var i = 0; i < 2; ++i)
+            {
+                var transform1 = netList[i];
+                var transform2 = outNetList[i];
+                Assert.That(transform1.Id.Id, Is.EqualTo(transform2.Id.Id));
+                Assert.That(transform1.Id.Active, Is.EqualTo(transform2.Id.Active));
+                Assert.That(transform1.Position.X, Is.EqualTo(transform2.Position.X).Within(tolerance));
+                Assert.That(transform1.Position.Y, Is.EqualTo(transform2.Position.Y).Within(tolerance));
+                Assert.That(transform1.Position.Z, Is.EqualTo(transform2.Position.Z).Within(tolerance));
+                Assert.That(transform1.Rotation.X, Is.EqualTo(transform2.Rotation.X).Within(tolerance));
+                Assert.That(transform1.Rotation.Y, Is.EqualTo(transform2.Rotation.Y).Within(tolerance));
+                Assert.That(transform1.Rotation.Z, Is.EqualTo(transform2.Rotation.Z).Within(tolerance));
+                Assert.That(transform1.Rotation.W, Is.EqualTo(transform2.Rotation.W).Within(tolerance));
+            }
             reader.ReadBytes(bytes, 128);
             for (var i = 0; i < 128; ++i)
             {

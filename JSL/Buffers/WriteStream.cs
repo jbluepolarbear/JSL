@@ -24,7 +24,7 @@ namespace JSL.Buffers
 
         public int CopyBytes(byte[] data)
         {
-            Flush();
+            Align();
             var size = _writer.GetBytesWritten();
             Assert.True(data.Length >= size);
             Memory.Copy(_writer.GetData(), data, 0, 0, size);

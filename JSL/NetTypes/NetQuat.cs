@@ -13,10 +13,14 @@ namespace JSL.NetTypes
         private const float Maximum = +1.0f / 1.414214f;
 
         private const int Bits = 9;
-        private const float Scale = (float) ((1 << Bits) - 1); // 2 ^ 9 - 1
+        private const float Scale = (float) ((1u << Bits) - 1u); // 2 ^ 9 - 1
         private const float InverseScale = 1.0f / Scale;
-        
-        public override void Serialize(WriteStream writer)
+
+        private uint _largest;
+        private uint _integerA;
+        private uint _integerB;
+        private uint _integerC;
+        public void Load()
         {
             var absX = Math.Abs(X);
             var absY = Math.Abs(Y);
@@ -98,28 +102,19 @@ namespace JSL.NetTypes
             var normalB = (b - Minimum) / (Maximum - Minimum);
             var normalC = (c - Minimum) / (Maximum - Minimum);
 
-            var integerA = (uint) Math.Floor(normalA * Scale + 0.5f);
-            var integerB = (uint) Math.Floor(normalB * Scale + 0.5f);
-            var integerC = (uint) Math.Floor(normalC * Scale + 0.5f);
-
-            writer.WriteBits(largest, 2);
-            writer.WriteBits(integerA, Bits);
-            writer.WriteBits(integerB, Bits);
-            writer.WriteBits(integerC, Bits);
+            _largest = largest;
+            _integerA = (uint) Math.Floor(normalA * Scale + 0.5f);
+            _integerB = (uint) Math.Floor(normalB * Scale + 0.5f);
+            _integerC = (uint) Math.Floor(normalC * Scale + 0.5f);
         }
 
-        public override void Deserialize(ReadStream reader)
+        public void Save()
         {
-            var largest = (uint) reader.ReadBits(2);
-            var integerA = (uint) reader.ReadBits(Bits);
-            var integerB = (uint) reader.ReadBits(Bits);
-            var integerC = (uint) reader.ReadBits(Bits);
-            
-            var a = integerA * InverseScale * (Maximum - Minimum) + Minimum;
-            var b = integerB * InverseScale * (Maximum - Minimum) + Minimum;
-            var c = integerC * InverseScale * (Maximum - Minimum) + Minimum;
+            var a = _integerA * InverseScale * (Maximum - Minimum) + Minimum;
+            var b = _integerB * InverseScale * (Maximum - Minimum) + Minimum;
+            var c = _integerC * InverseScale * (Maximum - Minimum) + Minimum;
 
-            switch (largest) {
+            switch (_largest) {
                 case 0:
                 {
                     X = (float) Math.Sqrt(1 - a * a - b * b - c * c);
@@ -161,6 +156,24 @@ namespace JSL.NetTypes
             Assert.True(!float.IsNaN(Y));
             Assert.True(!float.IsNaN(Z));
             Assert.True(!float.IsNaN(W));
+        }
+        
+        public override void Serialize(WriteStream writer)
+        {
+            Load();
+            writer.WriteBits(_largest, 2);
+            writer.WriteBits(_integerA, Bits);
+            writer.WriteBits(_integerB, Bits);
+            writer.WriteBits(_integerC, Bits);
+        }
+
+        public override void Deserialize(ReadStream reader)
+        {
+            _largest = (uint) reader.ReadBits(2);
+            _integerA = (uint) reader.ReadBits(Bits);
+            _integerB = (uint) reader.ReadBits(Bits);
+            _integerC = (uint) reader.ReadBits(Bits);
+            Save();
         }
 
         public float X;
