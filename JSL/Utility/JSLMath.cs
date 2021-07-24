@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace JSL.Utility
 {
+    // ReSharper disable once InconsistentNaming
     public static class JSLMath
     {
         public static float Lerp(float a, float b, float t)
@@ -46,6 +47,16 @@ namespace JSL.Utility
             var qz = (float) (Math.Cos(roll / 2.0f) * Math.Cos(pitch / 2.0f) * Math.Sin(yaw / 2.0f) - Math.Sin(roll / 2.0f) * Math.Sin(pitch / 2.0f) * Math.Cos(yaw / 2.0f));
             var qw = (float) (Math.Cos(roll / 2.0f) * Math.Cos(pitch / 2.0f) * Math.Cos(yaw / 2.0f) + Math.Sin(roll / 2.0f) * Math.Sin(pitch / 2.0f) * Math.Sin(yaw / 2.0f));
             return (qx, qy, qz, qw);
+        }
+
+        public static uint SignedToUnsigned(int value)
+        {
+            return (uint) ((value << 1) ^ (value >> 31));
+        }
+
+        public static int UnsignedToSigned(uint value)
+        {
+            return (int) ((value >> 1) ^ -(value & 1));
         }
         
         private static List<int> _powerOf2Cache = new List<int>(64)
