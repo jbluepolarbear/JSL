@@ -9,7 +9,7 @@ using JSL.Messages;
 
 namespace [[NAMESPACE]]
 {
-    public abstract class MessageFactory
+    public static class MessageFactory
     {
         public static void RegisterMessageFactory()
         {

@@ -7,6 +7,7 @@ using System.Text;
 using JSL.CodeGen.Messages.Generator;
 using JSL.CodeGen.Messages.Templates;
 using JSL.NetTypes;
+using JSL.Utility;
 
 namespace JSL.Messages.Generator
 {
@@ -18,47 +19,54 @@ namespace JSL.Messages.Generator
             {
                 File.Delete(file);
             }
-            var template = File.ReadAllText(MessageTemplate.Template);
+            var template = MessageTemplate.Template;
             var messageTypes = new List<string>();
             var id = 1; // 0 is BaseMessage and unused
             foreach (var messageType in config.MessageTypes)
             {
-                if (_typeReaderonversion.ContainsKey(messageType.Name) || TypeIsRecycleable(messageType.Name))
-                {
-                    messageTypes.Add(messageType.Name);
-                    GenerateType(id++, messageType, config.OutputNamespace, template, config.OutputPath);
-                }
+                messageTypes.Add(messageType.Name);
+                GenerateType(id++, messageType, config.OutputNamespace, template, config.OutputPath);
             }
-            GenerateBaseMessageImplicit(MessageFactoryTemplate.Tempalte, messageTypes, config.OutputPath);
+            GenerateBaseMessageImplicit(MessageFactoryTemplate.Tempalte, config.OutputNamespace, messageTypes, config.OutputPath);
             return true;
         }
 
         private List<Type> _recycleableTypes;
-        public bool TypeIsRecycleable(string typeName)
+        public bool TypeIsRecycleable(string typeName, out string fullTypeName)
         {
             if (_recycleableTypes == null)
             {
-                _recycleableTypes = Assembly.GetExecutingAssembly().GetTypes()
+                _recycleableTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(_ => _.GetTypes())
                     .Where(_ => _.BaseType != null && _.BaseType == typeof(NetRecyclable)).ToList();
             }
 
-            var foundType = _recycleableTypes.FirstOrDefault(_ => _.Name == typeName);
-            return foundType != null;
+            if (typeName.Contains("NetList"))
+            {
+                var innerTypeName = typeName.Substring(8, typeName.Length - 9);
+                var foundType = _recycleableTypes.FirstOrDefault(_ => _.Name.Contains(innerTypeName));
+                fullTypeName = foundType != null ? "JSL.NetTypes.NetList<" + foundType.FullName + ">" : null;
+            }
+            else
+            {
+                var foundType = _recycleableTypes.FirstOrDefault(_ => _.Name.Contains(typeName));
+                fullTypeName = foundType?.FullName;
+            }
+            return fullTypeName != null;
         }
 
         private const string BaseMessageToken = "[[MESSAGE_CONSTRUCTORS]]";
-        private void GenerateBaseMessageImplicit(string baseImplicitPath, List<string> messageTypes, string outputPath)
+        private void GenerateBaseMessageImplicit(string template, string namespaceName, List<string> messageTypes, string outputPath)
         {
-            var template = File.ReadAllText(baseImplicitPath);
             stringBuilder.Clear();
             foreach (var messageType in messageTypes)
             {
                 stringBuilder.AppendLine($"{messageType}.ClassId => new {messageType}(),");
             }
 
+            template = template.Replace(NamespaceToken, namespaceName);
             template = template.Replace(BaseMessageToken, stringBuilder.ToString());
             
-            File.WriteAllText(outputPath + "BaseMessage" + ".cs", template);
+            File.WriteAllText(outputPath + "MessageFactory" + ".cs", template);
         }
 
         private Dictionary<string, string> _typeReaderonversion = new Dictionary<string, string>
@@ -98,12 +106,18 @@ namespace JSL.Messages.Generator
                     .Replace(MemberNameToken, memberName)
                     .Replace(ReaderToken, _typeReaderonversion[typeName]);
                 stringBuilder.AppendLine(readBaseTemplate);
-                return;
             }
-            var readMessageTemplate = ReadMessageTypeTemplate
-                .Replace(MemberNameToken, memberName)
-                .Replace(MemberTypeToken, typeName);
-            stringBuilder.AppendLine(readMessageTemplate);
+            else if (TypeIsRecycleable(typeName, out var fullTypeName))
+            {
+                var readMessageTemplate = ReadMessageTypeTemplate
+                    .Replace(MemberNameToken, memberName)
+                    .Replace(MemberTypeToken, fullTypeName);
+                stringBuilder.AppendLine(readMessageTemplate);
+            }
+            else
+            {
+                throw new ArgumentException($"Type: {typeName} not found.");
+            }
         }
         
         private const string WriterBaseTypeTemplate = "writer.Write(" + MemberNameToken + ");";
@@ -114,25 +128,39 @@ namespace JSL.Messages.Generator
             {
                 var writeBaseTemplate = _typeWriteronversion[typeName].Replace(MemberNameToken, memberName);
                 stringBuilder.AppendLine(writeBaseTemplate);
-                return;
             }
-            var writeMessageTemplate = WriterMessageTypeTemplate
-                .Replace(MemberNameToken, memberName)
-                .Replace(MemberTypeToken, typeName);
-            stringBuilder.AppendLine(writeMessageTemplate);
+            else if (TypeIsRecycleable(typeName, out var fullTypeName))
+            {
+                var writeMessageTemplate = WriterMessageTypeTemplate
+                    .Replace(MemberNameToken, memberName)
+                    .Replace(MemberTypeToken, fullTypeName);
+                stringBuilder.AppendLine(writeMessageTemplate);
+            }
+            else
+            {
+                throw new ArgumentException($"Type: {typeName} not found.");
+            }
         }
 
-        private const string WriteAcquireTemplate = MemberNameToken + " = MemoryManager.SerializablePool.Get<" + MemberTypeToken + ">();";
+        private const string WriteAcquireTemplate = MemberNameToken + " = MemoryManager.RecyclablePool.Get<" + MemberTypeToken + ">();";
         private void WriteAcquireFunc(string typeName, string memberName)
         {
             if (_typeWriteronversion.ContainsKey(typeName))
             {
                 return;
             }
-            var writeAcquireTemplate = WriteAcquireTemplate
-                .Replace(MemberNameToken, memberName)
-                .Replace(MemberTypeToken, typeName);
-            stringBuilder.AppendLine(writeAcquireTemplate);
+
+            if (TypeIsRecycleable(typeName, out var fullTypeName))
+            {
+                var writeAcquireTemplate = WriteAcquireTemplate
+                    .Replace(MemberNameToken, memberName)
+                    .Replace(MemberTypeToken, fullTypeName);
+                stringBuilder.AppendLine(writeAcquireTemplate);
+            }
+            else
+            {
+                throw new ArgumentException($"Type: {typeName} not found.");
+            }
         }
 
         private const string WriteReleaseTemplate = MemberNameToken + ".Dispose();";
@@ -185,10 +213,25 @@ namespace JSL.Messages.Generator
             // Add all the members to the class
             foreach (var messageData in messageType.Data)
             {
-                var memberDeclaration = MemberDefinitionTemplate
-                    .Replace(MemberTypeToken, messageData.Type)
-                    .Replace(MemberNameToken, messageData.Name);
-                stringBuilder.AppendLine(memberDeclaration);
+
+                if (TypeIsRecycleable(messageData.Type, out var fullTypeName))
+                {
+                    var memberDeclaration = MemberDefinitionTemplate
+                        .Replace(MemberTypeToken, fullTypeName)
+                        .Replace(MemberNameToken, messageData.Name);
+                    stringBuilder.AppendLine(memberDeclaration);
+                }
+                else if (_typeWriteronversion.ContainsKey(messageData.Type))
+                {
+                    var memberDeclaration = MemberDefinitionTemplate
+                        .Replace(MemberTypeToken, messageData.Type)
+                        .Replace(MemberNameToken, messageData.Name);
+                    stringBuilder.AppendLine(memberDeclaration);
+                }
+                else
+                {
+                    throw new ArgumentException($"Type: {messageData.Type} not found.");
+                }
             }
 
             messageTemplate = messageTemplate.Replace(MembersToken, stringBuilder.ToString());
