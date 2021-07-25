@@ -1,28 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Text;
+using JSL.CodeGen.Messages.Generator;
+using JSL.CodeGen.Messages.Templates;
+using JSL.NetTypes;
 
 namespace JSL.Messages.Generator
 {
     public class MessageGenerator
     {
-        public bool Generate(IEnumerable<MessageType> messageTypeProvider, string templatePath, string baseImplicitPath, string outputPath)
+        public bool Generate(MessageGeneratorConfig config)
         {
-            foreach (var file in Directory.EnumerateFiles(outputPath))
+            foreach (var file in Directory.EnumerateFiles(config.OutputPath))
             {
                 File.Delete(file);
             }
-            var template = File.ReadAllText(templatePath);
+            var template = File.ReadAllText(MessageTemplate.Template);
             var messageTypes = new List<string>();
             var id = 1; // 0 is BaseMessage and unused
-            foreach (var messageType in messageTypeProvider)
+            foreach (var messageType in config.MessageTypes)
             {
-                messageTypes.Add(messageType.Name);
-                GenerateType(id++, messageType, template, outputPath);
+                if (_typeReaderonversion.ContainsKey(messageType.Name) || TypeIsRecycleable(messageType.Name))
+                {
+                    messageTypes.Add(messageType.Name);
+                    GenerateType(id++, messageType, config.OutputNamespace, template, config.OutputPath);
+                }
             }
-            GenerateBaseMessageImplicit(baseImplicitPath, messageTypes, outputPath);
+            GenerateBaseMessageImplicit(MessageFactoryTemplate.Tempalte, messageTypes, config.OutputPath);
             return true;
+        }
+
+        private List<Type> _recycleableTypes;
+        public bool TypeIsRecycleable(string typeName)
+        {
+            if (_recycleableTypes == null)
+            {
+                _recycleableTypes = Assembly.GetExecutingAssembly().GetTypes()
+                    .Where(_ => _.BaseType != null && _.BaseType == typeof(NetRecyclable)).ToList();
+            }
+
+            var foundType = _recycleableTypes.FirstOrDefault(_ => _.Name == typeName);
+            return foundType != null;
         }
 
         private const string BaseMessageToken = "[[MESSAGE_CONSTRUCTORS]]";
@@ -135,6 +156,7 @@ namespace JSL.Messages.Generator
         private const string MemberTypeToken = "[[MEMBER_TYPE]]";
         private const string MemberNameToken = "[[MEMBER_NAME]]";
         private const string MemberDefinitionTemplate = "public " + MemberTypeToken + " " + MemberNameToken + ";";
+        private const string NamespaceToken = "[[NAMESPACE]]";
         private const string ClassNameToken = "[[CLASS_NAME]]";
         private const string MembersToken = "[[MEMBERS]]";
         private const string MembersReadToken = "[[READ_MEMBERS]]";
@@ -144,9 +166,10 @@ namespace JSL.Messages.Generator
         private const string TypeIdToken = "[[TYPE_ID]]";
         private const int StringBufferSize = 2048;
         StringBuilder stringBuilder = new StringBuilder(StringBufferSize);
-        private bool GenerateType(int id, MessageType messageType, string messageTemplate, string outputPath)
+        private bool GenerateType(int id, MessageType messageType, string namespaceName, string messageTemplate, string outputPath)
         {
             messageTemplate = messageTemplate
+                .Replace(NamespaceToken, namespaceName)
                 .Replace(ClassNameToken, messageType.Name)
                 .Replace(TypeIdToken, id.ToString());
 
