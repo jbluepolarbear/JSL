@@ -1,18 +1,16 @@
 ﻿using System;
 using JSL.Buffers;
 using JSL.Utility;
-using Math = System.Math;
 
 namespace JSL.NetTypes
 {
     // Compresses Quaternion into 32 bits or an unsigned int
     public class NetQuat: NetRecyclable
     {
-        
         private const float Minimum = -1.0f / 1.414214f; // 1.0 / sqrt(2)
         private const float Maximum = +1.0f / 1.414214f;
 
-        private const int Bits = 12;
+        private const int Bits = 9;
         private const float Scale = (float) ((1u << Bits) - 1u); // 2 ^ 9 - 1
         private const float InverseScale = 1.0f / Scale;
 
@@ -103,9 +101,9 @@ namespace JSL.NetTypes
             var normalC = (c - Minimum) / (Maximum - Minimum);
 
             _largest = largest;
-            _integerA = (uint) Math.Floor(normalA * Scale + 0.5f);
-            _integerB = (uint) Math.Floor(normalB * Scale + 0.5f);
-            _integerC = (uint) Math.Floor(normalC * Scale + 0.5f);
+            _integerA = (uint) (float) Math.Floor(normalA * Scale + 0.5f);
+            _integerB = (uint) (float) Math.Floor(normalB * Scale + 0.5f);
+            _integerC = (uint) (float) Math.Floor(normalC * Scale + 0.5f);
         }
 
         public void Save()

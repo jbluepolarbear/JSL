@@ -142,7 +142,7 @@ namespace JSL.Buffers
                     _overflow = true;
                     return;
                 }
-                _data[_wordIndex++] = Memory.HostToNetwork((uint) (_scratch >> 32));
+                _data[_wordIndex] = Memory.HostToNetwork((uint) (_scratch >> 32));
             }
         }
         
@@ -161,7 +161,7 @@ namespace JSL.Buffers
             _bitsWritten = bitPosition;
             _wordIndex = _bitsWritten / 32;
             _bitIndex = _bitsWritten % 32;
-            _scratch = Memory.NetworkToHost(_data[_wordIndex]);
+            _scratch = (ulong) Memory.NetworkToHost(_data[_wordIndex]) << 32;
         }
 
         public int GetBitsAvailable()

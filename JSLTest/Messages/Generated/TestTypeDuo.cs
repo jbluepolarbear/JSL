@@ -1,0 +1,49 @@
+
+using JSL.Buffers;
+using JSL.NetTypes;
+using JSL.Pools;
+using JSL.Messages;
+
+namespace NetLib.Messages.Generated
+{
+    public class TestTypeDuo: BaseMessage
+    {       
+        public const uint ClassId = 2;
+        public override uint TypeId => 2;
+        public override void Serialize(WriteStream writer)
+        {
+// Writer
+base.Serialize(writer);
+TestField.Serialize(writer);
+
+        }
+
+        public override void Deserialize(ReadStream reader)
+        {
+// Reader
+base.Deserialize(reader);
+TestField.Deserialize(reader);
+
+        }
+
+        protected override void AcquireImpl()
+        {
+// Acquire
+base.AcquireImpl();
+TestField = MemoryManager.RecyclablePool.Get<JSL.NetTypes.NetVector3>();
+
+        }
+        
+        protected override void ReleaseImpl()
+        {
+// Release
+base.ReleaseImpl();
+TestField.Dispose();
+TestField = null;
+
+        }
+        
+public JSL.NetTypes.NetVector3 TestField;
+
+    }
+}

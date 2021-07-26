@@ -1,4 +1,5 @@
-﻿using JSL.Buffers;
+﻿using System;
+using JSL.Buffers;
 using JSL.Utility;
 
 namespace JSL.NetTypes
@@ -32,9 +33,9 @@ namespace JSL.NetTypes
             var normalB = (Y - MinimumY) / (MaximumY - MinimumY);
             var normalC = (Z - MinimumZ) / (MaximumZ - MinimumZ);
 
-            _integerA = (uint) (normalA * ScaleX + 0.5f);
-            _integerB = (uint) (normalB * ScaleY + 0.5f);
-            _integerC = (uint) (normalC * ScaleZ + 0.5f);
+            _integerA = (uint) (float) Math.Floor(normalA * ScaleX + 0.5f);
+            _integerB = (uint) (float) Math.Floor(normalB * ScaleY + 0.5f);
+            _integerC = (uint) (float) Math.Floor(normalC * ScaleZ + 0.5f);
         }
 
         public void Save()

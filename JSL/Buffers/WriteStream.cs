@@ -24,7 +24,7 @@ namespace JSL.Buffers
 
         public int CopyBytes(byte[] data)
         {
-            Align();
+            MakeCopyable();
             var size = _writer.GetBytesWritten();
             Assert.True(data.Length >= size);
             Memory.Copy(_writer.GetData(), data, 0, 0, size);
@@ -150,6 +150,12 @@ namespace JSL.Buffers
         public void Flush()
         {
             _writer.FlushBits();
+        }
+
+        public void MakeCopyable()
+        {
+            Align();
+            Flush();
         }
 
         public void SetBitPosition(int bitPosition)

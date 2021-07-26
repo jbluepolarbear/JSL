@@ -30,7 +30,7 @@ namespace JSL.Buffers
 
         public void Fill(WriteStream writer)
         {
-            writer.Flush();
+            writer.MakeCopyable();
             var size = writer.GetBytesProcessed();
             Memory.Copy(writer.GetData(), _reader.GetData(), 0, 0, size);
             _reader.Reset();

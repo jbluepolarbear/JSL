@@ -15,7 +15,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\JSL.CodeGen\JSL.CodeGen.csproj" />
       <ProjectReference Include="..\JSL\JSL.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Messages\Generated" />
     </ItemGroup>
 
 </Project>
