@@ -25,7 +25,21 @@ namespace JSL.Messages
             ToId = reader.ReadUInt32();
             Frame = reader.ReadUInt32();
         }
-        
+
+        protected override void AcquireImpl()
+        {
+            base.AcquireImpl();
+        }
+
+        protected override void ReleaseImpl()
+        {
+            base.ReleaseImpl();
+            Id = 0;
+            FromId = 0;
+            ToId = 0;
+            Frame = 0;
+        }
+
         public static implicit operator string(BaseMessage netString) => netString.GetType().ToString();
     }
 }
