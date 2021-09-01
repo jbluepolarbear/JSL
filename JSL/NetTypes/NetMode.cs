@@ -6,6 +6,8 @@
         Local,
         Server,
         Host, // This would be through a lan or relay service
-        Client
+        Client,
+        HostRelay, // This would be through a lan or relay service
+        ClientRelay
     }
 }

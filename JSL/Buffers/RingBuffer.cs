@@ -37,6 +37,12 @@ namespace JSL.Buffers
             List[_tail] = value;
         }
 
+        public void Clear()
+        {
+            _list?.Clear();
+            _tail = 0;
+        }
+
         public int Count => List.Count;
 
         public bool Full => List.Count == _capacity;
