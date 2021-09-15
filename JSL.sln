@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSLTest", "JSLTest\JSLTest.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSL.CodeGen", "JSL.CodeGen\JSL.CodeGen.csproj", "{09C88A6F-A72E-4B97-891B-58C6ED31CB9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSL.CodeGenTest", "JSL.CodeGenTest\JSL.CodeGenTest.csproj", "{816255E4-DA02-43AB-BC80-6B304D7A7259}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +24,5 @@ Global
 		{09C88A6F-A72E-4B97-891B-58C6ED31CB9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09C88A6F-A72E-4B97-891B-58C6ED31CB9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09C88A6F-A72E-4B97-891B-58C6ED31CB9B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{816255E4-DA02-43AB-BC80-6B304D7A7259}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{816255E4-DA02-43AB-BC80-6B304D7A7259}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{816255E4-DA02-43AB-BC80-6B304D7A7259}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{816255E4-DA02-43AB-BC80-6B304D7A7259}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

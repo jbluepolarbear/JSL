@@ -22,6 +22,11 @@ namespace JSLTest
         {
             MemoryManager.Instance.Clear();
             MessageFactory.RegisterMessageFactory();
+            //
+            // Example of using the code gen.
+            // The data definitions could be defined in code or from a json or xml file.
+            //
+            
             // string outputPath = @$"{Directory.GetCurrentDirectory()}/../../../Messages/Generated/";
             // var config = new MessageGeneratorConfig
             // {

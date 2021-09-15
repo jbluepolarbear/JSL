@@ -1,6 +1,6 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=68ad8200_002D62af_002D48f6_002D924a_002D2a894e3a0e14/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Packing" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;ProjectFile&gt;88540099-8A35-444B-AB86-BCD0BAAA6E2C/f:PackingTest.cs&lt;/ProjectFile&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=68ad8200_002D62af_002D48f6_002D924a_002D2a894e3a0e14/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Packing" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Solution /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8036fa28_002D7159_002D4482_002Da4ea_002D1dfffa40f8db/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="BufferTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Or&gt;&#xD;
@@ -8,8 +8,10 @@
     &lt;Project Location="C:\Users\jblue\Documents\Code\repos\JSL\JSL.CodeGenTest" Presentation="&amp;lt;JSL.CodeGenTest&amp;gt;" /&gt;&#xD;
   &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=97fb460a_002Dd143_002D412f_002D96f1_002D76ddf4e7f217/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="InstantiateNetQuat" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=97fb460a_002Dd143_002D412f_002D96f1_002D76ddf4e7f217/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="InstantiateNetQuat" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::88540099-8A35-444B-AB86-BCD0BAAA6E2C::.NETFramework,Version=v4.8::JSLTest.NetQuatTest.InstantiateNetQuat&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::88540099-8A35-444B-AB86-BCD0BAAA6E2C::.NETFramework,Version=v4.8::JSLTest.BufferTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::88540099-8A35-444B-AB86-BCD0BAAA6E2C::.NETFramework,Version=v4.8::JSLTest.PackingTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

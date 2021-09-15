@@ -1,4 +1,5 @@
-﻿using JSL.Buffers;
+﻿using System.Text;
+using JSL.Buffers;
 using JSL.NetTypes;
 using JSL.Pools;
 using NUnit.Framework;
@@ -43,6 +44,11 @@ namespace JSLTest
         public void TestStreams()
         {
             using var writer = MemoryManager.Instance.RecyclablePool.Get<WriteStream>();
+            {
+                var strBytes = Encoding.UTF8.GetBytes("hello there");
+                writer.Write(strBytes.Length);
+                writer.WriteBytes(strBytes, strBytes.Length);
+            }
             writer.WriteBits(127, 7);
             writer.WriteBits('c', 16);
             writer.WriteIntRange(2048, 1024, 2048);
@@ -87,6 +93,13 @@ namespace JSLTest
 
             using var reader = MemoryManager.Instance.RecyclablePool.Get<ReadStream>();
             reader.Fill(copyBuffer, 0, size);
+            {
+                var length = reader.ReadInt32();
+                var readBytes = new byte[length];
+                reader.ReadBytes(readBytes, length);
+                var readStr = Encoding.UTF8.GetString(readBytes);
+                Assert.AreEqual(readStr, "hello there");
+            }
             Assert.AreEqual(127, reader.ReadBits(7));
             Assert.AreEqual('c', reader.ReadBits(16));
             Assert.AreEqual(2048, reader.ReadIntRange(1024, 2048));
