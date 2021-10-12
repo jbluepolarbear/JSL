@@ -2,7 +2,7 @@
 
 namespace JSL.NetTypes
 {
-    public class NetId: NetRecyclable
+    public class NetId: NetRecyclableSerializable
     {
         public override void Serialize(WriteStream writer)
         {

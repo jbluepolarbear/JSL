@@ -3,7 +3,7 @@ using JSL.Buffers;
 
 namespace JSL.NetTypes
 {
-    public class NetString: NetRecyclable
+    public class NetString: NetRecyclableSerializable
     {
         public NetString()
         {

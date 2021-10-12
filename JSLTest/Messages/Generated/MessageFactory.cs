@@ -2,7 +2,6 @@
 using System;
 using JSL.Pools;
 using JSL.Messages;
-using NetLib.Messages.Generated;
 
 namespace JSLTest.Messages.Generated
 {

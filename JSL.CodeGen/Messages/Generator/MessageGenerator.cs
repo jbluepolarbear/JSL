@@ -37,7 +37,7 @@ namespace JSL.Messages.Generator
             if (_recycleableTypes == null)
             {
                 _recycleableTypes = AppDomain.CurrentDomain.GetAssemblies().SelectMany(_ => _.GetTypes())
-                    .Where(_ => _.BaseType != null && _.BaseType == typeof(NetRecyclable)).ToList();
+                    .Where(_ => _.BaseType != null && typeof(INetRecyclable).IsAssignableFrom(_.BaseType)).ToList();
             }
 
             if (typeName.Contains("NetList"))

@@ -7,7 +7,5 @@ namespace JSL.NetTypes
     {
         int RefCount { get; }
         IDisposable Acquire();
-        public void Serialize(WriteStream writer);
-        public void Deserialize(ReadStream reader);
     }
 }

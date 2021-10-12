@@ -9,7 +9,7 @@ namespace JSL.NetTypes
     /// Each Generated Type has TypeId and
     /// a BaseMessage partial class is generated with a switch implicit constructor on the TypeId
     /// </summary>
-    public class NetMessage: NetRecyclable
+    public class NetMessage: NetRecyclableSerializable
     {
         public BaseMessage Message;
 

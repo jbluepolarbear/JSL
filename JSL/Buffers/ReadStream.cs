@@ -37,11 +37,6 @@ namespace JSL.Buffers
             _reader.SetBitLength(size * 32);
         }
 
-        public void Read(INetRecyclable recyclable)
-        {
-            recyclable.Deserialize(this);
-        }
-
         public int ReadIntRange(int min, int max)
         {
             Assert.True(min < max);
@@ -191,16 +186,6 @@ namespace JSL.Buffers
         {
             base.ReleaseImpl();
             Reset();
-        }
-        
-        public override void Serialize(WriteStream writer)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void Deserialize(ReadStream reader)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

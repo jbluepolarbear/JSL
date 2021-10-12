@@ -9,7 +9,6 @@ using JSL.Messages.Util;
 using JSL.NetTypes;
 using JSL.Pools;
 using JSLTest.Messages.Generated;
-using NetLib.Messages.Generated;
 using NUnit.Framework;
 
 namespace JSLTest

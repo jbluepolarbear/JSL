@@ -5,7 +5,7 @@ using JSL.Utility;
 namespace JSL.NetTypes
 {
     // Compresses Quaternion into 32 bits or an unsigned int
-    public class NetQuat: NetRecyclable
+    public class NetQuat: NetRecyclableSerializable
     {
         private const float Minimum = -1.0f / 1.414214f; // 1.0 / sqrt(2)
         private const float Maximum = +1.0f / 1.414214f;

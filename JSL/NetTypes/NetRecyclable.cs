@@ -46,10 +46,6 @@ namespace JSL.NetTypes
             InstanceActive = false;
         }
 
-        public abstract void Serialize(WriteStream writer);
-
-        public abstract void Deserialize(ReadStream reader);
-
         protected MemoryManager MemoryManager => MemoryManager.Instance;
 
         public void Dispose()

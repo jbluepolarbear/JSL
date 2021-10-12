@@ -79,7 +79,7 @@ namespace JSLTest
             netTransform2.Rotation.Z = 0.0f;
             netTransform2.Rotation.W = 1.0f;
             netList.Add(netTransform2);
-            writer.Write(netList);
+            netList.Serialize(writer);
             var bytes = new byte[128];
             for (var i = 0; i < 128; ++i)
             {
@@ -108,7 +108,7 @@ namespace JSLTest
             Assert.AreEqual(1.1234567f, reader.ReadSingle());
             Assert.AreEqual(1.123456789101112131415, reader.ReadDouble());
             using var outNetList = MemoryManager.Instance.RecyclablePool.Get<NetList<NetTransform>>();
-            reader.Read(outNetList);
+            outNetList.Deserialize(reader);
             const float tolerance = 0.02f;
             for (var i = 0; i < 2; ++i)
             {

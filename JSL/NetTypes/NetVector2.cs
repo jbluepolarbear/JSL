@@ -2,7 +2,7 @@
 
 namespace JSL.NetTypes
 {
-    public class NetVector2: NetRecyclable
+    public class NetVector2: NetRecyclableSerializable
     {
         private const float Minimum = -131072.0f;
         private const float Maximum = +131071.0f;

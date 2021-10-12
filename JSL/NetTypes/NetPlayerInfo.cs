@@ -2,7 +2,7 @@
 
 namespace JSL.NetTypes
 {
-    public class NetPlayerInfo: NetRecyclable
+    public class NetPlayerInfo: NetRecyclableSerializable
     {
         public NetId Id;
         public NetString Name;

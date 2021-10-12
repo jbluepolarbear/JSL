@@ -4,7 +4,7 @@ using JSL.NetTypes;
 using JSL.Pools;
 using JSL.Messages;
 
-namespace NetLib.Messages.Generated
+namespace JSLTest.Messages.Generated
 {
     public class TestTypeDuo: BaseMessage
     {       

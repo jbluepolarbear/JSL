@@ -4,7 +4,7 @@ using JSL.Utility;
 
 namespace JSL.NetTypes
 {
-    public class NetVector3: NetRecyclable
+    public class NetVector3: NetRecyclableSerializable
     {
         private const float MinimumX = -256.0f;
         private const float MaximumX = 255.0f;

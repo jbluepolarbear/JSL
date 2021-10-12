@@ -10,7 +10,7 @@ namespace JSL.NetTypes
     /// Use NetArray<NetMessage> to wrap a generated Message
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class NetList<T>: NetRecyclable where T: NetRecyclable, new ()
+    public class NetList<T>: NetRecyclableSerializable where T: NetRecyclableSerializable, new ()
     {
         private List<T> _list { get; set; }
         public override void Serialize(WriteStream writer)

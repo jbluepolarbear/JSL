@@ -31,11 +31,6 @@ namespace JSL.Buffers
             return size;
         }
 
-        public void Write(INetRecyclable recyclable)
-        {
-            recyclable.Serialize(this);
-        }
-
         public void WriteIntRange(int value, int min, int max)
         {
             Assert.True(min < max);
@@ -205,16 +200,6 @@ namespace JSL.Buffers
         {
             base.ReleaseImpl();
             Reset();
-        }
-
-        public override void Serialize(WriteStream writer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Deserialize(ReadStream reader)
-        {
-            throw new NotImplementedException();
         }
     }
 }

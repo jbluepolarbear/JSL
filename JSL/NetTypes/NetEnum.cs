@@ -6,7 +6,7 @@ namespace JSL.NetTypes
     /// <summary>
     /// Enum wrapper
     /// </summary>
-    public class NetEnum: NetRecyclable
+    public class NetEnum: NetRecyclableSerializable
     {
         public NetEnum()
         {

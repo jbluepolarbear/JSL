@@ -26,7 +26,7 @@ namespace JSL.Messages.Util
             while (inMessages.Count > 0)
             {
                 var netMessage = inMessages.Peek();
-                writer.Write(netMessage);
+                netMessage.Serialize(writer);
                 if (writer.GetBitsProcessed() > testSize)
                 {
                     writer.SetBitPosition(lastOffset);

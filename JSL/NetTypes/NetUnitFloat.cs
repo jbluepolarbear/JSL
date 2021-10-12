@@ -6,7 +6,7 @@ namespace JSL.NetTypes
     /// <summary>
     /// Float with range from -1 to 1 inclusive
     /// </summary>
-    public class NetUnitFloat: NetRecyclable
+    public class NetUnitFloat: NetRecyclableSerializable
     {
         private const float Minimum = -1.0f / 1.414214f; // 1.0 / sqrt(2)
         private const float Maximum = +1.0f / 1.414214f;

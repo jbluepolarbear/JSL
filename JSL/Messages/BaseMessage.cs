@@ -3,7 +3,7 @@ using JSL.NetTypes;
 
 namespace JSL.Messages
 {
-    public abstract partial class BaseMessage: NetRecyclable
+    public abstract partial class BaseMessage: NetRecyclableSerializable
     {
         public abstract uint TypeId { get; }
         public uint Id;
