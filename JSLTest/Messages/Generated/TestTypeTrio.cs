@@ -6,10 +6,10 @@ using JSL.Messages;
 
 namespace JSLTest.Messages.Generated
 {
-    public class TestTypeDuo: BaseMessage
+    public class TestTypeTrio: BaseMessage
     {       
-        public const uint ClassId = 2;
-        public override uint TypeId => 2;
+        public const uint ClassId = 3;
+        public override uint TypeId => 3;
         public override void Serialize(WriteStream writer)
         {
 // Writer
@@ -30,7 +30,7 @@ TestField.Deserialize(reader);
         {
 // Acquire
 base.AcquireImpl();
-TestField = MemoryManager.RecyclablePool.Get<JSL.NetTypes.NetCompressedVector3>();
+TestField = MemoryManager.RecyclablePool.Get<JSL.NetTypes.NetVector3>();
 
         }
         
@@ -43,7 +43,7 @@ TestField = null;
 
         }
         
-public JSL.NetTypes.NetCompressedVector3 TestField;
+public JSL.NetTypes.NetVector3 TestField;
 
     }
 }

@@ -9,7 +9,7 @@ using Assert = NUnit.Framework.Assert;
 namespace JSLTest
 {
     [TestFixture]
-    public class NetVec3Test
+    public class NetCompressedVec3Test
     {
         
         [SetUp]
@@ -28,6 +28,7 @@ namespace JSLTest
             float endY = 10.0f;
             float endZ = 10.0f;
             var tolerance = 0.002f;
+            var toleranceZ = 0.02f;
             var step = 1.0f / 20.0f;
             for (var i = 0; i < 20; ++i)
             {
@@ -35,7 +36,7 @@ namespace JSLTest
                 var x = JSLMath.Lerp(startX, endX, t);
                 var y = JSLMath.Lerp(startY, endY, t);
                 var z = JSLMath.Lerp(startZ, endZ, t);
-                using var netVector3 = MemoryManager.Instance.RecyclablePool.Get<NetVector3>();
+                using var netVector3 = MemoryManager.Instance.RecyclablePool.Get<NetCompressedVector3>();
                 netVector3.X = x;
                 netVector3.Y = y;
                 netVector3.Z = z;
@@ -43,7 +44,7 @@ namespace JSLTest
                 netVector3.Save();
                 Assert.That(Math.Abs(x), Is.EqualTo(Math.Abs(netVector3.X)).Within(tolerance));
                 Assert.That(Math.Abs(y), Is.EqualTo(Math.Abs(netVector3.Y)).Within(tolerance));
-                Assert.That(Math.Abs(z), Is.EqualTo(Math.Abs(netVector3.Z)).Within(tolerance));
+                Assert.That(Math.Abs(z), Is.EqualTo(Math.Abs(netVector3.Z)).Within(toleranceZ));
             }
         }
 
@@ -57,15 +58,16 @@ namespace JSLTest
             float endY = 10.0f;
             float endZ = 10.0f;
             var tolerance = 0.002f;
+            var toleranceZ = 0.02f;
             var step = 1.0f / 20.0f;
-            using var netList = MemoryManager.Instance.RecyclablePool.Get<NetList<NetVector3>>();
+            using var netList = MemoryManager.Instance.RecyclablePool.Get<NetList<NetCompressedVector3>>();
             for (var i = 0; i < 20; ++i)
             {
                 var t = i * step;
                 var x = JSLMath.Lerp(startX, endX, t);
                 var y = JSLMath.Lerp(startY, endY, t);
                 var z = JSLMath.Lerp(startZ, endZ, t);
-                using var netVector3 = MemoryManager.Instance.RecyclablePool.Get<NetVector3>();
+                using var netVector3 = MemoryManager.Instance.RecyclablePool.Get<NetCompressedVector3>();
                 netVector3.X = x;
                 netVector3.Y = y;
                 netVector3.Z = z;
@@ -80,13 +82,13 @@ namespace JSLTest
             using var reader = MemoryManager.Instance.RecyclablePool.Get<ReadStream>();
             reader.Fill(copyBuffer, 0, size);
 
-            using var outNetList = MemoryManager.Instance.RecyclablePool.Get<NetList<NetVector3>>();
+            using var outNetList = MemoryManager.Instance.RecyclablePool.Get<NetList<NetCompressedVector3>>();
             outNetList.Deserialize(reader);
             for (var i = 0; i < 20; ++i)
             {
                 Assert.That(Math.Abs(netList[i].X), Is.EqualTo(Math.Abs(outNetList[i].X)).Within(tolerance));
                 Assert.That(Math.Abs(netList[i].Y), Is.EqualTo(Math.Abs(outNetList[i].Y)).Within(tolerance));
-                Assert.That(Math.Abs(netList[i].Z), Is.EqualTo(Math.Abs(outNetList[i].Z)).Within(tolerance));
+                Assert.That(Math.Abs(netList[i].Z), Is.EqualTo(Math.Abs(outNetList[i].Z)).Within(toleranceZ));
             }
         }
     }

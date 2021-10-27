@@ -53,6 +53,18 @@ namespace JSLTest
             //                 new MessageData
             //                 {
             //                     Name = "TestField",
+            //                     Type = "NetCompressedVector3"
+            //                 }
+            //             }
+            //         },
+            //         new MessageType
+            //         {
+            //             Name = "TestTypeTrio",
+            //             Data = new []
+            //             {
+            //                 new MessageData
+            //                 {
+            //                     Name = "TestField",
             //                     Type = "NetVector3"
             //                 }
             //             }
@@ -83,10 +95,18 @@ namespace JSLTest
             testTypeDuo.TestField.Z = 189.23f;
             netMsgDuo.Acquire();
             queue.Enqueue(netMsgDuo);
+            
+            using var netMsgTrio = MemoryManager.Instance.MessagePool.Get(TestTypeTrio.ClassId);
+            var testTypeTrio = (TestTypeTrio) netMsgTrio.Message;
+            testTypeTrio.TestField.X = 0.707106829f;
+            testTypeTrio.TestField.Y = 0.0f;
+            testTypeTrio.TestField.Z = 0.707106829f;
+            netMsgTrio.Acquire();
+            queue.Enqueue(netMsgTrio);
 
             using var writer = MemoryManager.Instance.RecyclablePool.Get<WriteStream>();
             int packed = writer.Pack(queue, 1024);
-            Assert.That(packed, Is.EqualTo(2));
+            Assert.That(packed, Is.EqualTo(3));
 
             var copyBuffer = new byte[1024];
             var size = writer.CopyBytes(copyBuffer);
@@ -95,20 +115,27 @@ namespace JSLTest
             var resultQueue = new Queue<NetMessage>();
             var unpacked = reader.Unpack(resultQueue);
             
-            Assert.That(unpacked, Is.EqualTo(2));
+            Assert.That(unpacked, Is.EqualTo(3));
 
-            var netMsgResult = resultQueue.Dequeue();
+            using var netMsgResult = resultQueue.Dequeue();
             var testTypeResult = (TestType) netMsgResult.Message;
             Assert.That(Math.Abs(testTypeResult.TestField.X), Is.EqualTo(Math.Abs(testType.TestField.X)).Within(tolerance));
             Assert.That(Math.Abs(testTypeResult.TestField.Y), Is.EqualTo(Math.Abs(testType.TestField.Y)).Within(tolerance));
             Assert.That(Math.Abs(testTypeResult.TestField.Z), Is.EqualTo(Math.Abs(testType.TestField.Z)).Within(tolerance));
             Assert.That(Math.Abs(testTypeResult.TestField.W), Is.EqualTo(Math.Abs(testType.TestField.W)).Within(tolerance));
 
-            var netMsgResultDuo = resultQueue.Dequeue();
+            using var netMsgResultDuo = resultQueue.Dequeue();
             var testTypeResultDuo = (TestTypeDuo) netMsgResultDuo.Message;
             Assert.That(testTypeResultDuo.TestField.X, Is.EqualTo(testTypeDuo.TestField.X).Within(tolerance));
             Assert.That(testTypeResultDuo.TestField.Y, Is.EqualTo(testTypeDuo.TestField.Y).Within(tolerance));
             Assert.That(testTypeResultDuo.TestField.Z, Is.EqualTo(testTypeDuo.TestField.Z).Within(tolerance));
+
+            tolerance = 0.0002f;
+            using var netMsgResultTrio = resultQueue.Dequeue();
+            var testTypeResultTrio = (TestTypeTrio) netMsgResultTrio.Message;
+            Assert.That(testTypeResultTrio.TestField.X, Is.EqualTo(testTypeTrio.TestField.X).Within(tolerance));
+            Assert.That(testTypeResultTrio.TestField.Y, Is.EqualTo(testTypeTrio.TestField.Y).Within(tolerance));
+            Assert.That(testTypeResultTrio.TestField.Z, Is.EqualTo(testTypeTrio.TestField.Z).Within(tolerance));
         }
     }
 }

@@ -16,6 +16,7 @@ namespace JSLTest.Messages.Generated
         {
 TestType.ClassId => new TestType(),
 TestTypeDuo.ClassId => new TestTypeDuo(),
+TestTypeTrio.ClassId => new TestTypeTrio(),
 
             _ => throw new ArgumentOutOfRangeException($"Type Id: {typeId} not found.")
         };
