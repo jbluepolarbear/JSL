@@ -1,5 +1,6 @@
 ﻿using System;
 using JSL.NetTypes;
+using JSL.Pooled;
 using JSL.Utility;
 
 namespace JSL.Buffers
@@ -9,12 +10,12 @@ namespace JSL.Buffers
         public WriteStream()
         {
             var size = 2048;
-            _writer = new BitWriter(new uint[size / 4], size);
+            _writer = new BitWriter(size);
         }
         
         public WriteStream(int size)
         {
-            _writer = new BitWriter(new uint[size / 4], size);
+            _writer = new BitWriter(size);
         }
 
         public void Reset()
@@ -22,12 +23,12 @@ namespace JSL.Buffers
             _writer.Reset();
         }
 
-        public int CopyBytes(byte[] data)
+        public int CopyBytes(Span<byte> data)
         {
             MakeCopyable();
             var size = _writer.GetBytesWritten();
             Assert.True(data.Length >= size);
-            Memory.Copy(_writer.GetData(), data, 0, 0, size);
+            Memory.Copy(_writer.AsReadOnlySpan(), data, 0, 0, size);
             return size;
         }
 
@@ -137,9 +138,19 @@ namespace JSL.Buffers
             return true;
         }
 
-        public uint[] GetData()
+        public Array<uint> GetData()
         {
             return _writer.GetData();
+        }
+        
+        public Span<uint> AsSpan()
+        {
+            return _writer.AsSpan();
+        }
+        
+        public ReadOnlySpan<uint> AsReadOnlySpan()
+        {
+            return _writer.AsReadOnlySpan();
         }
         
         public void Flush()

@@ -1,10 +1,12 @@
-﻿using JSL.Utility;
+﻿using System;
+using JSL.Pooled;
+using JSL.Utility;
 
 namespace JSL.Buffers
 {
     public class BitReader
     {
-        private readonly uint[] _data;
+        private readonly Array<uint> _data;
         private readonly int _numWords;
         private readonly int _numBits;
         private int _bitsRead;
@@ -14,12 +16,24 @@ namespace JSL.Buffers
         private int _bitLength;
         private bool _overflow;
 
-        public BitReader(uint[] data, int bytes)
+        public BitReader(int bytes)
         {
-            Assert.NotNull(data);
             Assert.True(bytes % 4 == 0);
-            _data = data;
+            _data = new Array<uint>(bytes / 4);
             _numWords = bytes / 4;
+            _numBits = _numWords * 32;
+            _bitsRead = 0;
+            _bitIndex = 0;
+            _wordIndex = 0;
+            _bitLength = _numBits;
+            _scratch = Memory.NetworkToHost(_data[0]);
+            _overflow = false;
+        }
+        
+        public BitReader(ReadOnlySpan<uint> data)
+        {
+            _data = new Array<uint>(data);
+            _numWords = _data.Length;
             _numBits = _numWords * 32;
             _bitsRead = 0;
             _bitIndex = 0;
@@ -94,11 +108,11 @@ namespace JSL.Buffers
             }
         }
 
-        public void ReadBytes(byte[] data, int bytes)
+        public void ReadBytes(Span<byte> data)
         {
             Assert.True(GetAlignBits() == 0);
 
-            if (_bitsRead + bytes * 8 >= _bitLength)
+            if (_bitsRead + data.Length * 8 >= _bitLength)
             {
                 _overflow = true;
                 return;
@@ -107,9 +121,9 @@ namespace JSL.Buffers
             Assert.True(_bitIndex == 0 || _bitIndex == 8 || _bitIndex == 16 || _bitIndex == 24);
 
             int headBytes = (4 - _bitIndex / 8) % 4;
-            if (headBytes > bytes)
+            if (headBytes > data.Length)
             {
-                headBytes = bytes;
+                headBytes = data.Length;
             }
 
             for (var i = 0; i < headBytes; ++i)
@@ -117,19 +131,19 @@ namespace JSL.Buffers
                 data[i] = (byte) ReadBits(8);
             }
 
-            if (headBytes == bytes)
+            if (headBytes == data.Length)
             {
                 return;
             }
 
             Assert.True(GetAlignBits() == 0);
 
-            var numWords = (bytes - headBytes) / 4;
+            var numWords = (data.Length - headBytes) / 4;
             if (numWords > 0)
             {
                 Assert.True(_bitIndex == 0);
                 // memcpy(data + headBytes, &_data[_wordIndex], numWords * 4);
-                Memory.Copy(_data, data, _wordIndex, headBytes, numWords * 4);
+                Memory.Copy(_data.AsSpan(), data, _wordIndex, headBytes, numWords * 4);
                 _bitsRead += numWords * 32;
                 _wordIndex += numWords;
                 _scratch = Memory.NetworkToHost(_data[_wordIndex]);
@@ -138,7 +152,7 @@ namespace JSL.Buffers
             Assert.True(GetAlignBits() == 0);
 
             var tailStart = headBytes + numWords * 4;
-            var tailBytes = bytes - tailStart;
+            var tailBytes = data.Length - tailStart;
             Assert.True(tailBytes >= 0 && tailBytes < 4);
             for (int i = 0; i < tailBytes; ++i)
             {
@@ -147,7 +161,7 @@ namespace JSL.Buffers
 
             Assert.True(GetAlignBits() == 0);
 
-            Assert.True(headBytes + numWords * 4 + tailBytes == bytes);
+            Assert.True(headBytes + numWords * 4 + tailBytes == data.Length);
         }
 
         public int GetAlignBits()
@@ -191,9 +205,19 @@ namespace JSL.Buffers
             return _numBits * 8;
         }
 
-        public uint[] GetData()
+        public Array<uint> GetData()
         {
             return _data;
+        }
+        
+        public Span<uint> AsSpan()
+        {
+            return _data.AsSpan();
+        }
+        
+        public ReadOnlySpan<uint> AsReadOnlySpan()
+        {
+            return _data.AsReadOnlySpan();
         }
 
         public bool IsOverflow()

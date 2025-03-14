@@ -18,7 +18,7 @@ namespace JSLTest
         [Test]
         public void TestBitBuffers()
         {
-            var bitWriter = new BitWriter(new uint[1024], 1024 * 4);
+            var bitWriter = new BitWriter(1024 * 4);
             bitWriter.WriteBits(127, 7);
             bitWriter.WriteBits('c', 16);
             var bytes = new byte[128];
@@ -29,11 +29,11 @@ namespace JSLTest
             bitWriter.WriteAlign();
             bitWriter.WriteBytes(bytes, 128);
             bitWriter.FlushBits();
-            var bitReader = new BitReader(bitWriter.GetData(), 1024);
+            var bitReader = new BitReader(bitWriter.AsReadOnlySpan());
             Assert.AreEqual(127, bitReader.ReadBits(7));
             Assert.AreEqual('c', bitReader.ReadBits(16));
             bitReader.ReadAlign();
-            bitReader.ReadBytes(bytes, 128);
+            bitReader.ReadBytes(bytes);
             for (var i = 0; i < 128; ++i)
             {
                 Assert.AreEqual((byte) i, bytes[i]);
@@ -96,7 +96,7 @@ namespace JSLTest
             {
                 var length = reader.ReadInt32();
                 var readBytes = new byte[length];
-                reader.ReadBytes(readBytes, length);
+                reader.ReadBytes(readBytes);
                 var readStr = Encoding.UTF8.GetString(readBytes);
                 Assert.AreEqual(readStr, "hello there");
             }
@@ -124,7 +124,7 @@ namespace JSLTest
                 Assert.That(transform1.Rotation.Z, Is.EqualTo(transform2.Rotation.Z).Within(tolerance));
                 Assert.That(transform1.Rotation.W, Is.EqualTo(transform2.Rotation.W).Within(tolerance));
             }
-            reader.ReadBytes(bytes, 128);
+            reader.ReadBytes(bytes);
             for (var i = 0; i < 128; ++i)
             {
                 Assert.AreEqual((byte) i, bytes[i]);

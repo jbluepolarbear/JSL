@@ -1,10 +1,12 @@
-﻿using JSL.Utility;
+﻿using System;
+using JSL.Pooled;
+using JSL.Utility;
 
 namespace JSL.Buffers
 {
     public class BitWriter
     {
-        private readonly uint[] _data;
+        private readonly Array<uint> _data;
         private readonly int _numWords;
         private readonly int _numBits;
         private int _bitsWritten;
@@ -13,11 +15,10 @@ namespace JSL.Buffers
         private int _wordIndex;
         private bool _overflow;
 
-        public BitWriter(uint[] data, int bytes)
+        public BitWriter(int bytes)
         {
-            Assert.NotNull(data);
             Assert.True(bytes % 4 == 0);
-            _data = data;
+            _data = new Array<uint>(bytes / 4);
             _numWords = bytes / 4;
             _numBits = _numWords * 32;
             _bitsWritten = 0;
@@ -77,7 +78,7 @@ namespace JSL.Buffers
             }
         }
         
-        public void WriteBytes(byte[] data, int bytes)
+        public void WriteBytes(ReadOnlySpan<byte> data, int bytes)
         {
             Assert.True(GetAlignBits() == 0);
             if (_bitsWritten + bytes * 8 >=_numBits)
@@ -111,7 +112,7 @@ namespace JSL.Buffers
             {
                 Assert.True(_bitIndex == 0);
                 // memcpy(&_data[_wordIndex], data + headBytes, numWords * 4);
-                Memory.Copy(data, _data, headBytes, _wordIndex, numWords * 4);
+                Memory.Copy(data, _data.AsSpan(), headBytes, _wordIndex, numWords * 4);
                 _bitsWritten += numWords * 32;
                 _wordIndex += numWords;
                 _scratch = 0;
@@ -169,9 +170,19 @@ namespace JSL.Buffers
             return _numBits - _bitsWritten;
         }
 
-        public uint[] GetData()
+        public Array<uint> GetData()
         {
             return _data;
+        }
+        
+        public Span<uint> AsSpan()
+        {
+            return _data.AsSpan();
+        }
+        
+        public ReadOnlySpan<uint> AsReadOnlySpan()
+        {
+            return _data.AsReadOnlySpan();
         }
 
         public int GetBytesWritten()

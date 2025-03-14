@@ -1,4 +1,5 @@
-﻿using JSL.NetTypes;
+﻿using System;
+using JSL.NetTypes;
 using JSL.Utility;
 
 namespace JSL.Buffers
@@ -8,12 +9,12 @@ namespace JSL.Buffers
         public ReadStream()
         {
             int size = 2048;
-            _reader = new BitReader(new uint[size / 4], size);
+            _reader = new BitReader(size);
         }
         
         public ReadStream(int size)
         {
-            _reader = new BitReader(new uint[size / 4], size);
+            _reader = new BitReader(size);
         }
 
         public void Reset()
@@ -21,9 +22,9 @@ namespace JSL.Buffers
             _reader.Reset();
         }
 
-        public void Fill(byte[] data, int offset, int size)
+        public void Fill(ReadOnlySpan<byte> data, int offset, int size)
         {
-            Memory.Copy(data, _reader.GetData(), offset, 0, size);
+            Memory.Copy(data, _reader.AsSpan(), offset, 0, size);
             _reader.Reset();
             _reader.SetBitLength(size * 8);
         }
@@ -32,7 +33,7 @@ namespace JSL.Buffers
         {
             writer.MakeCopyable();
             var size = writer.GetBytesProcessed();
-            Memory.Copy(writer.GetData(), _reader.GetData(), 0, 0, size);
+            Memory.Copy(writer.AsReadOnlySpan(), _reader.AsSpan(), 0, 0, size);
             _reader.Reset();
             _reader.SetBitLength(size * 32);
         }
@@ -53,14 +54,10 @@ namespace JSL.Buffers
             return value;
         }
 
-        public void ReadBytes(byte[] data, int size)
+        public void ReadBytes(Span<byte> data)
         {
-            if (data == null)
-            {
-                return;
-            }
             Align();
-            _reader.ReadBytes(data, size);
+            _reader.ReadBytes(data);
         }
         
         public byte ReadByte()

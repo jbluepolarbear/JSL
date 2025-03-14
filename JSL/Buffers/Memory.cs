@@ -126,7 +126,35 @@ namespace JSL.Buffers
             }
         }
         
+        public static void Copy(ReadOnlySpan<byte> src, Span<uint> dst, int srcOffset, int dstOffset, int length)
+        {
+            unsafe
+            {
+                fixed (byte* srcPtr = src)
+                {
+                    fixed (uint* dstPtr = dst)
+                    {
+                        UnsafeMemory.Copy(srcPtr + srcOffset, (byte*) (dstPtr + dstOffset), length);
+                    }
+                }
+            }
+        }
+        
         public static void Copy(uint[] src, uint[] dst, int srcOffset, int dstOffset, int length)
+        {
+            unsafe
+            {
+                fixed (uint* srcPtr = src)
+                {
+                    fixed (uint* dstPtr = dst)
+                    {
+                        UnsafeMemory.Copy((byte*) (srcPtr + srcOffset), (byte*) (dstPtr + dstOffset), length);
+                    }
+                }
+            }
+        }
+        
+        public static void Copy(ReadOnlySpan<uint> src, Span<uint> dst, int srcOffset, int dstOffset, int length)
         {
             unsafe
             {
@@ -154,7 +182,35 @@ namespace JSL.Buffers
             }
         }
         
+        public static void Copy(ReadOnlySpan<uint> src, Span<byte> dst, int srcOffset, int dstOffset, int length)
+        {
+            unsafe
+            {
+                fixed (uint* srcPtr = src)
+                {
+                    fixed (byte* dstPtr = dst)
+                    {
+                        UnsafeMemory.Copy( (byte*) (srcPtr + srcOffset),  dstPtr + dstOffset, length);
+                    }
+                }
+            }
+        }
+        
         public static void Copy(byte[] src, byte[] dst, int srcOffset, int dstOffset, int length)
+        {
+            unsafe
+            {
+                fixed (byte* srcPtr = src)
+                {
+                    fixed (byte* dstPtr = dst)
+                    {
+                        UnsafeMemory.Copy( srcPtr + srcOffset,  dstPtr + dstOffset, length);
+                    }
+                }
+            }
+        }
+        
+        public static void Copy(ReadOnlySpan<byte> src, Span<byte> dst, int srcOffset, int dstOffset, int length)
         {
             unsafe
             {
