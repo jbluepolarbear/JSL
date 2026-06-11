@@ -1,4 +1,7 @@
-﻿namespace JSL.CodeGen.Messages.Templates
+// Copyright (c) 2026 Jeremy Anderson (github: jbluepolarbear, email: jbluepolarbear@gmail.com, website: jeremyrobertanderson.com)
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+namespace JSL.CodeGen.Messages.Templates
 {
     public static class MessageTemplate
     {

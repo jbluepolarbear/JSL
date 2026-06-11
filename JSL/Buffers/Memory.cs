@@ -1,11 +1,20 @@
-﻿using System;
+// Copyright (c) 2026 Jeremy Anderson (github: jbluepolarbear, email: jbluepolarbear@gmail.com, website: jeremyrobertanderson.com)
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Net;
 using System.Numerics;
 
 namespace JSL.Buffers
 {
+    /// <summary>
+    /// Internal unsafe memory utility for copy operations.
+    /// </summary>
     internal static unsafe class UnsafeMemory
     {
+        /// <summary>
+        /// Unsafely copies a block of uint memory.
+        /// </summary>
         public static void Copy(uint* src, uint* dst, int length)
         {
             for (var i = 0; i < length; ++i)
@@ -14,6 +23,9 @@ namespace JSL.Buffers
             }
         }
         
+        /// <summary>
+        /// Unsafely copies a block of byte memory.
+        /// </summary>
         public static void Copy(byte* src, byte* dst, int length)
         {
             for (var i = 0; i < length; ++i)
@@ -23,7 +35,10 @@ namespace JSL.Buffers
         }
     }
 
-    internal static class Memory
+    /// <summary>
+    /// Collection of high-performance memory copy, casting, endian conversion, and math operations.
+    /// </summary>
+    public static class Memory
     {
         /// <summary>
         /// Gets the raw integer value of the float
@@ -67,11 +82,20 @@ namespace JSL.Buffers
             }
         }
 
-        private static double Log2 = Math.Log(2); 
         public static int BitsRequired(int min, int max)
         {
-            var log2 = Math.Log(max - min) / Log2;
-            return min == max ? 0 : (int) Math.Floor(log2 + 1);
+            int val = max - min;
+            if (val <= 0)
+            {
+                return 0;
+            }
+            int bits = 0;
+            while (val > 0)
+            {
+                bits++;
+                val >>= 1;
+            }
+            return bits;
         }
         
         public static ushort NetworkToHost(ushort value)
